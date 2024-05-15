@@ -1,3 +1,6 @@
+[tool.setuptools]
+packages = ["app", "test"]
+
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
@@ -10,6 +13,9 @@ requires-python = ">=3.8"
 dynamic = ["version"]
 dependencies = [
     "fastapi==0.111.0",
+    "sqlmodel==0.0.18",
+    "alembic==1.13.1",
+    "asyncpg==0.29.0"
 ]
 
 [project.optional-dependencies]
