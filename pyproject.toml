@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ecommerce"
+authors = [{name = "Tien Pham", email = "dinhlang86@gmail.com"}]
+description = "Ecommerce backend api using FastAPI"
+requires-python = ">=3.8"
+dynamic = ["version"]
+dependencies = [
+    "fastapi==0.111.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest==8.2.0"]
+dev = ["black==24.4.2",
+    "flake8==7.0.0", "mypy==1.10.0", "isort==5.13.2"]
+
+[tool.black]
+line-length = 100
+exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | venv
+  | \.venv
+)/
+'''
+
+[tool.isort]
+# make it compatible with black
+profile = "black" 
+
+[tool.mypy]
+strict=true
+implicit_reexport=true
+exclude=[".venv"]
+
+[tool.pytest.ini_options]
+pythonpaths = ["./"]
