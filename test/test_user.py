@@ -6,5 +6,5 @@ client = TestClient(app)
 
 
 def test_get_all_user() -> None:
-    response = client.get("/user")
+    response = client.get("/user/list")
     assert response.status_code == status.HTTP_200_OK
