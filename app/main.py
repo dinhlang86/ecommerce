@@ -1,6 +1,6 @@
 from fastapi import FastAPI, status
-from app.routers import user_api, auth_api
 
+from app.routers import auth_api, user_api
 
 app = FastAPI()
 
