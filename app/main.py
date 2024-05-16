@@ -1,5 +1,5 @@
 from fastapi import FastAPI, status
-from app.routers import user_api
+from app.routers import user_api, auth_api
 
 
 app = FastAPI()
@@ -11,3 +11,4 @@ def check_healthy() -> dict[str, str]:
 
 
 app.include_router(user_api.router)
+app.include_router(auth_api.router)
