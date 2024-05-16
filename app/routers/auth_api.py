@@ -1,17 +1,20 @@
+from datetime import timedelta
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel.ext.asyncio.session import AsyncSession
-from app.core.database import get_async_session
 from starlette import status
-from app.schemas.auth_schema import Token
-from typing import Annotated
-from app.services.auth_service import authenticate_user, create_access_token
-from datetime import timedelta
 
+from app.core.database import get_async_session
+from app.schemas.auth_schema import Token
+from app.services.auth_service import authenticate_user, create_access_token
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
+# Create JSON Web Token for user login
+# Return the string of access token and token type
 @router.post("/login", response_model=Token)
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
