@@ -7,7 +7,7 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from starlette import status
 
-from app.core.config import ALGORITHM, SECRET_KEY
+from app.core.config import config
 from app.models import User
 from app.models.user import Role, TokenUser
 from app.utils.auth_utils import bcrypt_context, oauth2_bearer
@@ -30,12 +30,12 @@ def create_access_token(username: str, user_id: int, role: str, expires_delta: t
         "role": role,
         "exp": datetime.now(timezone.utc) + expires_delta,
     }
-    return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode(encode, config.secret_key, algorithm=config.algorithm)
 
 
 def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]) -> TokenUser:
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, config.secret_key, algorithms=[config.algorithm])
         if (
             (payload.get("sub") is None)
             or (payload.get("id") is None)
@@ -58,5 +58,15 @@ def get_admin_user(logged_in_user: TokenUser = Depends(get_current_user)) -> Tok
     if logged_in_user.role != Role.admin:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Admin access required"
+        )
+    return logged_in_user
+
+
+def check_admin_or_current_user(
+    user_id: int, logged_in_user: TokenUser = Depends(get_current_user)
+) -> TokenUser:
+    if logged_in_user.role != Role.admin and logged_in_user.id != user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Admin or current user access required"
         )
     return logged_in_user
