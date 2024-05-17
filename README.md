@@ -8,7 +8,7 @@ Run "pip-compile --extra dev -o requirements/dev.txt pyproject.toml" to create p
 
 Run "pip install -r requirements/prod.txt ."
 When developing run "pip install -r requirements/dev.txt ."
-When testing run "pip install -r requirements/test.txt --editable ."
+When testing run "pip install -r requirements/test.txt ."
 
 # Setup Database Migration
 

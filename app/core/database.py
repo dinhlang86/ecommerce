@@ -3,11 +3,11 @@ from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-SQLMODEL_DATABASE_URL = (
-    "postgresql+asyncpg://postgres:dinhlang@localhost/EcommerceApplicationDatabase"
-)
+from app.core.config import config
 
-async_engine = create_async_engine(SQLMODEL_DATABASE_URL, echo=True)
+db_connection_str = f"postgresql+asyncpg://{config.db_username}:{config.db_password}@\
+{config.db_host}:{config.db_port}/{config.db_name}"
+async_engine = create_async_engine(db_connection_str, echo=True)
 
 
 # Get asynchroneous session for database

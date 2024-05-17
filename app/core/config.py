@@ -1,4 +1,30 @@
+import json
 import os
 
-SECRET_KEY = os.getenv("SECRET_KEY", "Secret")
-ALGORITHM = os.getenv("ALGORITHM", "HS256")
+
+class Config:
+    secret_key: str
+    algorithm: str
+    db_host: str
+    db_port: str
+    db_username: str
+    db_password: str
+    db_name: str
+
+
+def read_config_file(filename: str) -> Config:
+    filepath = os.path.join(os.path.dirname(__file__), f"../../{filename}")
+    with open(filepath, "r") as file:
+        data: dict[str, str] = json.load(file)
+    config = Config()
+    config.secret_key = data.get("secret_key", "Secretkey")
+    config.algorithm = data.get("algorithm", "HS256")
+    config.db_host = data.get("db_host", "localhost")
+    config.db_port = data.get("db_port", "5432")
+    config.db_username = data.get("db_username", "postgres")
+    config.db_password = data.get("db_password", "password")
+    config.db_name = data.get("db_name", "ecommerce")
+    return config
+
+
+config = read_config_file("config.json")

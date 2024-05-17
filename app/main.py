@@ -10,5 +10,5 @@ def check_healthy() -> dict[str, str]:
     return {"message": "I am healthy!"}
 
 
-app.include_router(user_api.router)
 app.include_router(auth_api.router)
+app.include_router(user_api.router)
