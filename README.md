@@ -12,7 +12,7 @@ When testing run "pip install -r requirements/test.txt ."
 
 # Setup Database Migration
 
-Run "alembic init migrations"
+Run "alembic init -t async migrations"
 Change sqlalchemy.url to the postgres database
 Import all models into env.py and change value for target_metadata with "SQLModel.metadata"
 Import sqlmodel into the script.py.mako file
