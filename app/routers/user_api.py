@@ -3,8 +3,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from starlette import status
 
 from app.core.database import get_async_session
-from app.models import User
-from app.models.user import TokenUser
+from app.models.user import DisplayUser, TokenUser, User
 from app.schemas.user_schema import CreateUserRequest, PutUserPassword
 from app.services.auth_service import check_admin_or_current_user, get_admin_user
 from app.services.user_service import (
@@ -22,9 +21,9 @@ router = APIRouter(prefix="/user", tags=["user"])
 async def get_user(
     _: TokenUser = Depends(get_admin_user),
     session: AsyncSession = Depends(get_async_session),
-) -> list[User]:
+) -> list[DisplayUser]:
     users: list[User] = await get_all_users(session)
-    return users
+    return [DisplayUser.model_validate(user) for user in users]
 
 
 # Get user by id, only admin can access this API
