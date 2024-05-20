@@ -32,11 +32,11 @@ async def get_user_id(
     _: TokenUser = Depends(get_admin_user),
     session: AsyncSession = Depends(get_async_session),
     user_id: int = Path(gt=0),
-) -> User:
+) -> DisplayUser:
     user: User | None = await get_user_by_id(user_id, session)
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-    return user
+    return DisplayUser.model_validate(user)
 
 
 # Create a new user in the database, only admin can access this API
