@@ -38,3 +38,11 @@ async def update_password(user_view: PutUserPassword, user_id: int, db: AsyncSes
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Password")
     user_model.password = bcrypt_context.hash(user_view.new_password)
     await db.commit()
+
+
+async def delete_user_by_id(user_id: int, db: AsyncSession) -> None:
+    user_model: User | None = await db.get(User, user_id)
+    if user_model is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    await db.delete(user_model)
+    await db.commit()
