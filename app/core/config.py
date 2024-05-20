@@ -1,5 +1,6 @@
 import json
 import os
+from typing import Any
 
 
 class Config:
@@ -27,4 +28,12 @@ def read_config_file(filename: str) -> Config:
     return config
 
 
+def read_test_file(filename: str) -> dict[str, Any]:
+    filepath = os.path.join(os.path.dirname(__file__), f"../../{filename}")
+    with open(filepath, "r") as file:
+        data: dict[str, str] = json.load(file)
+    return data
+
+
 config = read_config_file("config.json")
+test_data = read_test_file("test_data.json")
