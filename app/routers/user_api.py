@@ -8,6 +8,7 @@ from app.schemas.user_schema import CreateUserRequest, PutUserPassword
 from app.services.auth_service import check_admin_or_current_user, get_admin_user
 from app.services.user_service import (
     create_new_user,
+    delete_user_by_id,
     get_all_users,
     get_user_by_id,
     update_password,
@@ -54,11 +55,17 @@ async def create_user(
 async def change_password(
     user_view: PutUserPassword,
     user_id: int,
-    user: TokenUser = Depends(check_admin_or_current_user),
+    _: TokenUser = Depends(check_admin_or_current_user),
     db: AsyncSession = Depends(get_async_session),
 ) -> None:
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication Failed"
-        )
     await update_password(user_view, user_id, db)
+
+
+# Admin can delete user based on id
+@router.delete("/user/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_user(
+    user_id: int,
+    _: TokenUser = Depends(get_admin_user),
+    session: AsyncSession = Depends(get_async_session),
+) -> None:
+    await delete_user_by_id(user_id, session)
