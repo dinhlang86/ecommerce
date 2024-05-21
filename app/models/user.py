@@ -10,16 +10,34 @@ class Role(str, enum.Enum):
     user = "user"
 
 
-class DisplayUser(SQLModel):
-    id: Optional[int] = Field(primary_key=True, index=True)
+class UserBase(SQLModel):
     name: str
-    email: str
+    email: str = Field(index=True)
     role: Role = Field(sa_column=Column(Enum(Role), default=Role.user, nullable=False))
 
 
 # Create User model with email as username and password to login to the application
-class User(DisplayUser, table=True):
+class User(UserBase, table=True):
+    id: Optional[int] = Field(primary_key=True, index=True)
     password: str
+
+
+class UserCreate(UserBase):
+    password: str = Field(min_length=6)
+
+
+class UserUpdatePassword(SQLModel):
+    password: str
+    new_password: str = Field(min_length=6)
+
+
+class UserUpdateInfo(SQLModel):
+    name: str | None = None
+    email: str | None = None
+
+
+class UserPublic(UserBase):
+    id: int
 
 
 @dataclass
