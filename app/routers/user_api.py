@@ -59,6 +59,7 @@ async def create_user(
 
 
 # Admin can change password for admin or user
+# User can change their own password
 @router.put("/password/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def change_password(
     user_view: UserUpdatePassword,
@@ -69,6 +70,8 @@ async def change_password(
     await update_password(user_view, user_id, db)
 
 
+# Admin can change information for admin or user
+# User can change their own information
 @router.put("/info/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def change_information(
     user_view: UserUpdateInfo,
