@@ -17,6 +17,7 @@ from app.services.category_service import (
 router = APIRouter(prefix="/category", tags=["category"])
 
 
+# Get all categories in the database, all users can access this API
 @router.get("", status_code=status.HTTP_200_OK)
 async def get_categories(
     _: TokenUser = Depends(get_current_user),
@@ -26,6 +27,7 @@ async def get_categories(
     return categories
 
 
+# Get category by id, all users can access this API
 @router.get(
     "/category/{category_id}", status_code=status.HTTP_200_OK, response_model=CategoryPublic
 )
@@ -40,6 +42,7 @@ async def get_category_id(
     return category
 
 
+# Create a new category in the database, only admin can access this API
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=CategoryPublic)
 async def create_category(
     category_request: CategoryCreate,
@@ -50,6 +53,7 @@ async def create_category(
     return category
 
 
+# Update category information, only admin can access this API
 @router.put("/category/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def change_category(
     category_view: CategoryUpdate,
@@ -60,6 +64,7 @@ async def change_category(
     await update_category_info(category_view, category_id, db)
 
 
+# Delete category by id, only admin can access this API
 @router.delete("/category/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_category(
     category_id: int,

@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Optional
 
 from sqlmodel import Field, Relationship, SQLModel
 
+# Solve the circular import problem by using TYPE_CHECKING
 if TYPE_CHECKING:
     from app.models.product import Product
 
