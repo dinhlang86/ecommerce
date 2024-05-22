@@ -1,8 +1,12 @@
 import enum
 from dataclasses import dataclass
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
-from sqlmodel import Column, Enum, Field, SQLModel
+from sqlmodel import Column, Enum, Field, Relationship, SQLModel
+
+# resolve circular import
+if TYPE_CHECKING:
+    from app.models.cart import Cart
 
 
 class Role(str, enum.Enum):
@@ -20,6 +24,7 @@ class UserBase(SQLModel):
 class User(UserBase, table=True):
     id: Optional[int] = Field(primary_key=True, index=True)
     password: str
+    carts: list["Cart"] = Relationship(back_populates="cart")
 
 
 class UserCreate(UserBase):
