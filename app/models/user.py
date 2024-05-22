@@ -24,7 +24,7 @@ class UserBase(SQLModel):
 class User(UserBase, table=True):
     id: Optional[int] = Field(primary_key=True, index=True)
     password: str
-    carts: list["Cart"] = Relationship(back_populates="cart")
+    carts: Optional[list["Cart"]] = Relationship(back_populates="user")
 
 
 class UserCreate(UserBase):
