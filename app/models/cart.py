@@ -25,6 +25,10 @@ class Cart(CartBase, table=True):
     id: Optional[int] = Field(primary_key=True, index=True)
     user_id: int = Field(foreign_key="user.id")
     user: User = Relationship(back_populates="carts")
-    cart_items: list["CartItem"] = Relationship(
+    cart_items: Optional[list["CartItem"]] = Relationship(
         sa_relationship=relationship("CartItem", cascade="all, delete", back_populates="cart")
     )
+
+
+class CartCreate(CartBase):
+    pass
