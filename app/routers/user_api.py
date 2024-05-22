@@ -26,7 +26,7 @@ router = APIRouter(prefix="/user", tags=["user"])
 
 # Get all users in the database, only admin can access this API
 @router.get("", status_code=status.HTTP_200_OK, response_model=list[UserPublic])
-async def get_user(
+async def get_users(
     _: TokenUser = Depends(get_admin_user),
     session: AsyncSession = Depends(get_async_session),
 ) -> list[User]:
