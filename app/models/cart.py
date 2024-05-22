@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING, Optional
 from sqlalchemy.orm import relationship
 from sqlmodel import TIMESTAMP, Column, Field, Relationship, SQLModel, text
 
+from app.models.user import User
+
 # resolve circular import
 if TYPE_CHECKING:
     from app.models.cart_item import CartItem
-
-from app.models.user import User
 
 
 class CartBase(SQLModel):
@@ -19,16 +19,14 @@ class CartBase(SQLModel):
             server_default=text("CURRENT_TIMESTAMP"),
         )
     )
+    user_id: int = Field(foreign_key="user.id")
 
 
 class Cart(CartBase, table=True):
     id: Optional[int] = Field(primary_key=True, index=True)
-    user_id: int = Field(foreign_key="user.id")
     user: User = Relationship(back_populates="carts")
-    cart_items: Optional[list["CartItem"]] = Relationship(
-        sa_relationship=relationship("CartItem", cascade="all, delete", back_populates="cart")
+    cart_items: list["CartItem"] = Relationship(
+        sa_relationship=relationship(
+            "CartItem", cascade="all, delete", back_populates="cart", lazy="selectin"
+        )
     )
-
-
-class CartCreate(CartBase):
-    pass
