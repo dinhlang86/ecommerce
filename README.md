@@ -14,7 +14,8 @@ When testing run "pip install -r requirements/test.txt ."
 
 Run "alembic init -t async migrations"
 Change sqlalchemy.url to the postgres database
-Import all models into env.py and change value for target_metadata with "SQLModel.metadata"
+Change value for target_metadata with "SQLModel.metadata" in env.py file
+Import all models into env.py and init.py file (in folder models)
 Import sqlmodel into the script.py.mako file
 Run: alembic revision --autogenerate -m "Added new table"
 Run: "alembic upgrade head" (or the revision id) to upgrade the database
