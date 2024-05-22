@@ -3,10 +3,17 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from starlette import status
 
 from app.core.database import get_async_session
-from app.models.cart import Cart, CartCreate
+from app.models.cart import Cart, CartCreate, CartItemCreate, CartPublicWithItems
 from app.models.user import TokenUser
 from app.services.auth_service import get_current_user
-from app.services.cart_service import create_new_cart, get_cart_by_id, get_carts
+from app.services.cart_service import (
+    add_item,
+    create_new_cart,
+    delete_cart_by_id,
+    delete_item,
+    get_cart_by_id,
+    get_carts,
+)
 
 router = APIRouter(prefix="/cart", tags=["cart"])
 
@@ -33,7 +40,8 @@ async def get_all_carts(
 
 
 # Get cart by id, user can get cart created by themselves, admin can get any cart
-@router.get("/cart/{cart_id}", status_code=status.HTTP_200_OK, response_model=Cart)
+# Return cart with all items in it
+@router.get("/cart/{cart_id}", status_code=status.HTTP_200_OK, response_model=CartPublicWithItems)
 async def get_cart_id(
     cart_id: int,
     user: TokenUser = Depends(get_current_user),
@@ -43,3 +51,35 @@ async def get_cart_id(
     if cart is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cart not found")
     return cart
+
+
+# Add item to cart, only login user can add item to their cart
+@router.post("/cart/{cart_id}/item", status_code=status.HTTP_201_CREATED)
+async def add_item_to_cart(
+    cart_id: int,
+    item_request: CartItemCreate,
+    user: TokenUser = Depends(get_current_user),
+    session: AsyncSession = Depends(get_async_session),
+) -> None:
+    await add_item(cart_id, item_request, session, user)
+
+
+# Delete item from cart, only login user can delete item from their cart
+@router.delete("/cart/{cart_id}/item/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_item_from_cart(
+    cart_id: int,
+    item_id: int,
+    user: TokenUser = Depends(get_current_user),
+    session: AsyncSession = Depends(get_async_session),
+) -> None:
+    await delete_item(cart_id, item_id, session, user)
+
+
+# Delete cart by id, only login user can delete their cart
+@router.delete("/cart/{cart_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_cart(
+    cart_id: int,
+    user: TokenUser = Depends(get_current_user),
+    session: AsyncSession = Depends(get_async_session),
+) -> None:
+    await delete_cart_by_id(cart_id, session, user)

@@ -1,9 +1,15 @@
+from fastapi import HTTPException, status
 from sqlalchemy.engine import ScalarResult
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from app.models.cart import Cart, CartCreate
+from app.models.cart import Cart, CartCreate, CartItem, CartItemCreate
 from app.models.user import Role, TokenUser
+
+
+def check_cart_owner(cart: Cart, user: TokenUser, text: str) -> None:
+    if cart.user_id != user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"{text}")
 
 
 async def create_new_cart(cart_request: CartCreate, db: AsyncSession, user_id: int) -> Cart:
@@ -33,3 +39,35 @@ async def get_cart_by_id(cart_id: int, db: AsyncSession, user: TokenUser) -> Car
             select(Cart).where(Cart.id == cart_id).where(Cart.user_id == user.id)
         )
     return result.first()
+
+
+async def add_item(
+    cart_id: int, item_request: CartItemCreate, db: AsyncSession, user: TokenUser
+) -> None:
+    cart: Cart | None = await db.get(Cart, cart_id)
+    if not cart:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cart not found")
+    check_cart_owner(cart, user, "You can only add item to your cart")
+    cart_item = CartItem(**item_request.model_dump())
+    cart_item.cart_id = cart_id
+    db.add(cart_item)
+    await db.commit()
+
+
+async def delete_item(cart_id: int, item_id: int, db: AsyncSession, user: TokenUser) -> None:
+    cart: Cart | None = await db.get(Cart, cart_id)
+    if not cart:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cart not found")
+    check_cart_owner(cart, user, "You can only delete item from your cart")
+    item: CartItem | None = await db.get(CartItem, item_id)
+    await db.delete(item)
+    await db.commit()
+
+
+async def delete_cart_by_id(cart_id: int, db: AsyncSession, user: TokenUser) -> None:
+    cart: Cart | None = await db.get(Cart, cart_id)
+    if not cart:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cart not found")
+    check_cart_owner(cart, user, "You can only delete your cart")
+    await db.delete(cart)
+    await db.commit()
