@@ -1,11 +1,14 @@
 from datetime import date
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy.orm import relationship
 from sqlmodel import Field, Relationship, SQLModel
 
 from app.models.product import Product
 from app.models.user import User
+
+if TYPE_CHECKING:
+    from app.models.order import Order
 
 
 class CartBase(SQLModel):
@@ -20,6 +23,9 @@ class Cart(CartBase, table=True):
         sa_relationship=relationship(
             "CartItem", cascade="all, delete", back_populates="cart", lazy="selectin"
         )
+    )
+    order: Optional["Order"] = Relationship(
+        sa_relationship_kwargs={"uselist": False}, back_populates="cart"
     )
 
 

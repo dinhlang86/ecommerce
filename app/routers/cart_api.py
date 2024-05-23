@@ -61,7 +61,7 @@ async def add_item_to_cart(
     user: TokenUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_async_session),
 ) -> None:
-    await add_item(cart_id, item_request, session, user)
+    await add_item(cart_id, item_request, session, user.id)
 
 
 # Delete item from cart, only login user can delete item from their cart
@@ -72,7 +72,7 @@ async def delete_item_from_cart(
     user: TokenUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_async_session),
 ) -> None:
-    await delete_item(cart_id, item_id, session, user)
+    await delete_item(cart_id, item_id, session, user.id)
 
 
 # Delete cart by id, only login user can delete their cart
@@ -82,4 +82,4 @@ async def delete_cart(
     user: TokenUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_async_session),
 ) -> None:
-    await delete_cart_by_id(cart_id, session, user)
+    await delete_cart_by_id(cart_id, session, user.id)
