@@ -7,6 +7,7 @@ from sqlmodel import Column, Enum, Field, Relationship, SQLModel
 # resolve circular import
 if TYPE_CHECKING:
     from app.models.cart import Cart
+    from app.models.order import Order
 
 
 class Role(str, enum.Enum):
@@ -22,9 +23,10 @@ class UserBase(SQLModel):
 
 # Create User model with email as username and password to login to the application
 class User(UserBase, table=True):
-    id: Optional[int] = Field(primary_key=True, index=True)
+    id: Optional[int] = Field(primary_key=True)
     password: str
     carts: Optional[list["Cart"]] = Relationship(back_populates="user")
+    orders: Optional[list["Order"]] = Relationship(back_populates="user")
 
 
 class UserCreate(UserBase):

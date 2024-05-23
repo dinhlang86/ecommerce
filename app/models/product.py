@@ -14,7 +14,7 @@ class ProductBase(SQLModel):
 
 
 class Product(ProductBase, table=True):
-    id: Optional[int] = Field(primary_key=True, index=True)
+    id: Optional[int] = Field(primary_key=True)
     category: Category = Relationship(back_populates="products")
 
 

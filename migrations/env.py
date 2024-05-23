@@ -8,9 +8,9 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from sqlmodel import SQLModel
 
 from app.models import User
-from app.models.cart import Cart
-from app.models.cart_item import CartItem
+from app.models.cart import Cart, CartItem
 from app.models.category import Category
+from app.models.order import Order, OrderItem
 from app.models.product import Product
 
 # this is the Alembic Config object, which provides

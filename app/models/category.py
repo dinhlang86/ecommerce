@@ -12,7 +12,7 @@ class CategoryBase(SQLModel):
 
 
 class Category(CategoryBase, table=True):
-    id: Optional[int] = Field(primary_key=True, index=True)
+    id: Optional[int] = Field(primary_key=True)
     products: list["Product"] = Relationship(back_populates="category")
 
 
