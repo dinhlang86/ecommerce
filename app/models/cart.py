@@ -1,25 +1,19 @@
-from datetime import datetime
+from datetime import date
 from typing import Optional
 
 from sqlalchemy.orm import relationship
-from sqlmodel import TIMESTAMP, Column, Field, Relationship, SQLModel, text
+from sqlmodel import Field, Relationship, SQLModel
 
 from app.models.product import Product
 from app.models.user import User
 
 
 class CartBase(SQLModel):
-    created_date: Optional[datetime] = Field(
-        sa_column=Column(
-            TIMESTAMP(timezone=True),
-            nullable=False,
-            server_default=text("CURRENT_TIMESTAMP"),
-        )
-    )
+    created_date: Optional[date] = Field(default_factory=date.today, nullable=False)
 
 
 class Cart(CartBase, table=True):
-    id: Optional[int] = Field(primary_key=True, index=True)
+    id: Optional[int] = Field(primary_key=True)
     user_id: int = Field(foreign_key="user.id")
     user: User = Relationship(back_populates="carts")
     cart_items: list["CartItem"] = Relationship(
@@ -39,18 +33,12 @@ class CartPublic(CartBase):
 
 
 class CartItemBase(SQLModel):
-    created_date: Optional[datetime] = Field(
-        sa_column=Column(
-            TIMESTAMP(timezone=True),
-            nullable=False,
-            server_default=text("CURRENT_TIMESTAMP"),
-        )
-    )
+    created_date: Optional[date] = Field(default_factory=date.today, nullable=False)
     product_id: int = Field(foreign_key="product.id")
 
 
 class CartItem(CartItemBase, table=True):
-    id: Optional[int] = Field(primary_key=True, index=True)
+    id: Optional[int] = Field(primary_key=True)
     product: Product = Relationship()
     cart_id: int = Field(foreign_key="cart.id")
     cart: Cart = Relationship(back_populates="cart_items")
