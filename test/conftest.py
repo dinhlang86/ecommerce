@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from app.core.config import config
+from app.core.config import config, test_data
 from app.core.database import db_connection_str, get_async_session
 from app.main import app
 from app.models.user import User
@@ -59,14 +59,26 @@ async def async_session(test_engine: AsyncEngine) -> AsyncGenerator[AsyncSession
 @pytest_asyncio.fixture(scope="function")
 async def admin_user(async_session: AsyncSession) -> AsyncGenerator[User, None]:
     user = User(
-        id=1,
-        email="admin@gmail.com",
-        name="admin",
-        password="$2b$12$TsmFp5ID4jr0bYTF66zgOeqf0tW/Y4J7.Dves2GT4oL9ipV/0N8te",  # admin
-        role="admin",
+        id=test_data["initial_user"]["admin"]["id"],
+        email=test_data["initial_user"]["admin"]["email"],
+        name=test_data["initial_user"]["admin"]["name"],
+        password=test_data["initial_user"]["admin"]["password"],  # admin
+        role=test_data["initial_user"]["admin"]["role"],
     )
     async_session.add(user)
-    await async_session.commit()
+    yield user
+
+
+@pytest_asyncio.fixture(scope="function")
+async def normal_user(async_session: AsyncSession) -> AsyncGenerator[User, None]:
+    user = User(
+        id=test_data["initial_user"]["user"]["id"],
+        email=test_data["initial_user"]["user"]["email"],
+        name=test_data["initial_user"]["user"]["name"],
+        password=test_data["initial_user"]["user"]["password"],  # admin
+        role=test_data["initial_user"]["user"]["role"],
+    )
+    async_session.add(user)
     yield user
 
 
@@ -81,4 +93,19 @@ async def client(async_session: AsyncSession) -> AsyncGenerator[AsyncClient, Non
 
 @pytest_asyncio.fixture(scope="function")
 async def admin_token() -> str:
-    return create_access_token("admin@gmail.com", 1, "admin", timedelta(minutes=20))
+    return create_access_token(
+        test_data["initial_user"]["admin"]["email"],
+        test_data["initial_user"]["admin"]["id"],
+        test_data["initial_user"]["admin"]["role"],
+        timedelta(minutes=20),
+    )
+
+
+@pytest_asyncio.fixture(scope="function")
+async def user_token() -> str:
+    return create_access_token(
+        test_data["initial_user"]["user"]["email"],
+        test_data["initial_user"]["user"]["id"],
+        test_data["initial_user"]["user"]["role"],
+        timedelta(minutes=20),
+    )
